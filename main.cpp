@@ -28,8 +28,8 @@ void savePPM(const std::string& filename, int width, int height, const std::vect
 }
 
 int main() {
-    int width = 256;
-    int height = 256;
+    int width = 800;
+    int height = 450;
     
     // Create a simple image: a gradient from black to white
     std::vector<glm::i8vec3> image_data(width * height*3);
@@ -37,10 +37,9 @@ int main() {
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
             int idx = (y * width + x);
-            unsigned char value = static_cast<unsigned char>((x + y) % 256);  // Simple gradient
-            image_data[idx].r = x;       // Red
-            image_data[idx].g = y;   // Green
-            image_data[idx].b = 255;   // Blue
+            image_data[idx].r = 255 * ((float)x/width);     // Red
+            image_data[idx].g = 255 * ((float)y/height);    // Green
+            image_data[idx].b = 255;                        // Blue
         }
     }
 
