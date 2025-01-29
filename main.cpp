@@ -7,13 +7,27 @@
 
 #include "ray.h"
 
+bool hitSphere(glm::vec3 center, float radius, ray& r)
+{
+    glm::vec3 oc = center-r.getOrigin();
+    auto a = glm::dot(r.getDirection(), r.getDirection());
+    auto b = -2.0f * dot(r.getDirection(),oc); 
+    auto c = glm::dot(oc, oc) - (radius * radius); 
+    auto dis = b*b - 4.0f * a * c;
+    return (dis >= 0);
+}
 glm::i8vec3 getColor(ray& r)
 {
     glm::vec3 retColor = glm::vec3(0.0f);
 
-    float a = 0.5f * ((glm::normalize(r.getDirection()).y) + 1.0);
-    retColor = (1.0f-a) * glm::vec3(1.0f) + a * glm::vec3(0.5f,0.7f,1.0f);
-    
+    if(hitSphere(glm::vec3(0.0f,0.0f,-1.0f), 0.5,r))
+        retColor = glm::vec3(1.0f,0.0f,0.0f);
+    else
+    {
+        float a = 0.5f * ((glm::normalize(r.getDirection()).y) + 1.0);
+        retColor = (1.0f-a) * glm::vec3(1.0f) + a * glm::vec3(0.5f,0.7f,1.0f);
+    }
+
     return glm::i8vec3(255 * retColor.r,255 * retColor.g,255 * retColor.b);
 }
 
@@ -31,7 +45,7 @@ int main() {
     auto camera_center = glm::vec3(0.0f);
 
     auto VP_h = glm::vec3(VP_width,0.0f,0.0f);
-    auto VP_v =  glm::vec3(0.0f,-VP_width,0.0f);
+    auto VP_v =  glm::vec3(0.0f,-VP_height,0.0f);
     auto pixel_delta_h = VP_h / width;
     auto pixel_delta_v = VP_v / height;
 
