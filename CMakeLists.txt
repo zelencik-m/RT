@@ -2,6 +2,6 @@ cmake_minimum_required(VERSION 3.20)  # Minimum CMake version
 project(HelloWorld)                  # Define project name
 
 include_directories(lib/glm)
+include_directories(${CMAKE_SOURCE_DIR})
 
-# Define an executable target
 add_executable(main main.cpp)
