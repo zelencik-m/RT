@@ -10,9 +10,9 @@
 float hitSphere(glm::vec3 center, float radius, ray& r)
 {
     glm::vec3 oc = center-r.getOrigin();
-    auto a = glm::dot(r.getDirection(), r.getDirection());
+    auto a = glm::length(r.getDirection()) *  glm::length(r.getDirection());
     auto h = dot(r.getDirection(),oc); 
-    auto c = glm::dot(oc, oc) - (radius * radius); 
+    auto c = glm::length(oc) * glm::length(oc) - (radius * radius); 
     auto dis = h*h - a * c;
     if (dis < 0)
         return -1.0f;
