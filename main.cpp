@@ -7,21 +7,30 @@
 
 #include "ray.h"
 
-bool hitSphere(glm::vec3 center, float radius, ray& r)
+float hitSphere(glm::vec3 center, float radius, ray& r)
 {
     glm::vec3 oc = center-r.getOrigin();
     auto a = glm::dot(r.getDirection(), r.getDirection());
-    auto b = -2.0f * dot(r.getDirection(),oc); 
+    auto h = dot(r.getDirection(),oc); 
     auto c = glm::dot(oc, oc) - (radius * radius); 
-    auto dis = b*b - 4.0f * a * c;
-    return (dis >= 0);
+    auto dis = h*h - a * c;
+    if (dis < 0)
+        return -1.0f;
+    else
+        return (h - std::sqrt(dis)) / a;
 }
+
 glm::i8vec3 getColor(ray& r)
 {
     glm::vec3 retColor = glm::vec3(0.0f);
 
-    if(hitSphere(glm::vec3(0.0f,0.0f,-1.0f), 0.5,r))
-        retColor = glm::vec3(1.0f,0.0f,0.0f);
+    float t = hitSphere(glm::vec3(0.0f,0.0f,-1.0f), 0.5,r);
+
+    if(t != -1.0f)
+    {
+        glm::vec3 normal = glm::normalize(r.at(t) - glm::vec3(0.0f,0.0f,-1.0f));
+        retColor = 0.5f * (normal + 1.0f);
+    }
     else
     {
         float a = 0.5f * ((glm::normalize(r.getDirection()).y) + 1.0);
