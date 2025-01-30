@@ -5,31 +5,18 @@
 #include <glm/glm.hpp>
 #include <glm/ext/vector_int2_sized.hpp>
 
-#include "ray.h"
+#include "hittable.h"
+#include "hittable_list.h"
+#include "sphere.h"
 
-float hitSphere(glm::vec3 center, float radius, ray& r)
-{
-    glm::vec3 oc = center-r.getOrigin();
-    auto a = glm::length(r.getDirection()) *  glm::length(r.getDirection());
-    auto h = dot(r.getDirection(),oc); 
-    auto c = glm::length(oc) * glm::length(oc) - (radius * radius); 
-    auto dis = h*h - a * c;
-    if (dis < 0)
-        return -1.0f;
-    else
-        return (h - std::sqrt(dis)) / a;
-}
-
-glm::i8vec3 getColor(ray& r)
+glm::i8vec3 getColor(ray& r,hittable_list& world)
 {
     glm::vec3 retColor = glm::vec3(0.0f);
 
-    float t = hitSphere(glm::vec3(0.0f,0.0f,-1.0f), 0.5,r);
-
-    if(t != -1.0f)
+    hit_record rec;
+    if(world.hit(r,0,1000,rec))
     {
-        glm::vec3 normal = glm::normalize(r.at(t) - glm::vec3(0.0f,0.0f,-1.0f));
-        retColor = 0.5f * (normal + 1.0f);
+        retColor = 0.5f * (rec.normal + 1.0f);
     }
     else
     {
@@ -62,7 +49,12 @@ int main() {
     auto pixel0 = VP_upper_left + 0.5f * (pixel_delta_h + pixel_delta_v);
 
     std::vector<glm::i8vec3> image_data(width * height*3);
-    
+
+    hittable_list world;
+    world.add(std::make_shared<sphere>(glm::vec3(0.0f,0.0f,-1.0f),0.5));
+    world.add(std::make_shared<sphere>(glm::vec3(0.0f,-100.0f,-1.0f),100));
+
+
     for (int y = 0; y < height; ++y) {
         for (int x = 0; x < width; ++x) {
 
@@ -71,7 +63,7 @@ int main() {
 
             ray r(pixel_center,ray_dir);
             int idx = (y * width + x);
-            image_data[idx] = getColor(r);
+            image_data[idx] = getColor(r,world);
 
         }
     }
