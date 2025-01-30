@@ -16,8 +16,8 @@ int main() {
     camera Camera(800.0,400.0,4.0,2.0); 
 
     hittable_list world;
-    world.add(std::make_shared<sphere>(glm::vec3(0.0f,0.0f,-1.0f),0.5));
-    world.add(std::make_shared<sphere>(glm::vec3(0.0f,-100.0f,-1.0f),100));
+    world.add(std::make_shared<sphere>(glm::vec3(0.0f,0.0f,-3.0f),0.5));
+    world.add(std::make_shared<sphere>(glm::vec3(0.0f,-100.5f,-1.0f),100));
 
     std::shared_ptr<std::vector<glm::i8vec3> > image_data = Camera.render(world);
 

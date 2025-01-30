@@ -28,7 +28,7 @@ public:
 
         rec.p = r.at(root);
         rec.t = root;
-        glm::vec3 normal_out = glm::normalize(r.at(root)-center);
+        glm::vec3 normal_out = (rec.p-center) / radius;
         rec.set_normal(r,normal_out);
 
         return 1;
