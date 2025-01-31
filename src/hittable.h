@@ -4,7 +4,7 @@
 
 class hit_record
 {
-    public:
+public:
     glm::vec3 p;
     glm::vec3 normal;
     float t;
@@ -12,14 +12,14 @@ class hit_record
 
     void set_normal(ray& r, glm::vec3& normal_out)
     {
-        front_face = dot(r.getDirection(), normal_out) < 0;
+        front_face = glm::dot(glm::normalize(r.getDirection()), normal_out) < 0.0f;
         normal = front_face ? normal_out : -normal_out;
     }
 };
 
 class hittable
 {
-    public:
+public:
     virtual ~hittable() = default;
 
     virtual bool hit( ray& r, float r_t_min, float r_t_max, hit_record& rec) const = 0;
