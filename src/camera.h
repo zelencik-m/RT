@@ -54,7 +54,7 @@ public:
                     pixelCol = pixelCol / 2.0f;
                 }
                 int idx = (y * width + x);
-                (*image_data)[idx] = glm::i8vec3(255 * pixelCol.r,255 * pixelCol.g,255 * pixelCol.b);
+                (*image_data)[idx] = glm::i8vec3(255 * std::sqrt(pixelCol.r),255 * std::sqrt(pixelCol.g),255 * std::sqrt(pixelCol.b));
 
             }
         }
@@ -93,7 +93,7 @@ private:
             
             if(glm::dot(rand_vec,rec.normal)<=0.0f)
                 rand_vec = -rand_vec;
-
+            rand_vec = rec.normal + rand_vec;
             ray ra(rec.p,rand_vec);
             // return 0.5f * (glm::vec3(rec.t));
 
@@ -101,7 +101,7 @@ private:
 
         }
         float a = 0.5f * ((glm::normalize(r.getDirection()).y) + 1.0);
-        return (1.0f-a) * glm::vec3(1.0f) + a * glm::vec3(1.0f,0.0f,0.0f);
+        return (1.0f-a) * glm::vec3(1.0f) + a * glm::vec3(0.5f,0.7f,1.0f);
     }
 
 private:
