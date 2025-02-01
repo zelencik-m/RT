@@ -1,14 +1,15 @@
 #pragma once
 
 #include "hittable.h"
+#include "material.h"
 #include "ray.h"
 
 
 class sphere:public hittable
 {
 public:
-    sphere(glm::vec3 c,float r) : center(c),radius(std::fmax(0,r)){}
-
+    sphere(glm::vec3 c,float r, std::shared_ptr<material> m) : center(c),radius(std::fmax(0,r)), mat(m){}
+    
     bool hit( ray& r, float r_t_min, float r_t_max, hit_record& rec) const override
     {
         glm::vec3 oc = center- r.getOrigin();
@@ -31,11 +32,13 @@ public:
         rec.t = root;
         glm::vec3 normal_out = glm::normalize(rec.p - center);
         rec.set_normal(r,normal_out);
-
+        rec.mat = mat;
         return 1;
     }
 
 private:
     glm::vec3 center;
     float radius;
+    std::shared_ptr<material> mat;
+
 };

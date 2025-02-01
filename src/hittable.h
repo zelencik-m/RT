@@ -2,11 +2,16 @@
 
 #include "ray.h"
 
+#include<memory>
+
+class material;
+
 class hit_record
 {
 public:
     glm::vec3 p;
     glm::vec3 normal;
+    std::shared_ptr<material> mat;
     float t;
     bool front_face;
 
@@ -20,7 +25,7 @@ public:
 class hittable
 {
 public:
-    virtual ~hittable() = default;
+    // virtual ~hittable() = default;
 
     virtual bool hit( ray& r, float r_t_min, float r_t_max, hit_record& rec) const = 0;
 };

@@ -9,6 +9,7 @@
 
 #include "hittable_list.h"
 #include "ray.h"
+#include "material.h"
 
 class camera
 {
@@ -73,31 +74,14 @@ private:
         hit_record rec;
         if(world.hit(r,0.005f,std::numeric_limits<float>::infinity(),rec))
         {
-            // return 0.5f * (rec.normal + 1.0f);
-            bool should_continue = 1;
-            glm::vec3 rand_vec;
-            while (should_continue)
+            ray reflected(glm::vec3(0.0f),glm::vec3(0.0f));
+            glm::vec3 att;
+            if(rec.mat->scatter(r,rec,att,reflected))
             {
-                static std::random_device rd;
-                static std::mt19937 gen(rd());
-                std::uniform_real_distribution<float> dist(-1.0f, 1.0f);
+                return att * getColor(reflected,world,bouce_count+1);
 
-                rand_vec = glm::vec3(dist(gen), dist(gen), dist(gen));
-                auto lenq = glm::length(rand_vec) * glm::length(rand_vec);
-                if( lenq > 1e-160 && lenq <= 1.0 )
-                {
-                    should_continue = 0;
-                    rand_vec = rand_vec / std::sqrt(lenq);
-                }
             }
-            
-            if(glm::dot(rand_vec,rec.normal)<=0.0f)
-                rand_vec = -rand_vec;
-            rand_vec = rec.normal + rand_vec;
-            ray ra(rec.p,rand_vec);
-            // return 0.5f * (glm::vec3(rec.t));
-
-            return 0.5f * getColor(ra, world,bouce_count+1);
+            return glm::vec3(0.0f);
 
         }
         float a = 0.5f * ((glm::normalize(r.getDirection()).y) + 1.0);
@@ -116,5 +100,5 @@ private:
     glm::vec3 camera_pos;
     int sampels_per_pixel;
 
-    int max_bouce_count = 1;
+    int max_bouce_count = 10;
 };
