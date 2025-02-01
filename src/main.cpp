@@ -18,7 +18,7 @@ int main() {
 
     auto material_ground = std::make_shared<lambertian>(glm::vec3(0.8f, 0.8f, 0.0f));
     auto material_center = std::make_shared<lambertian>(glm::vec3(0.1f, 0.2f, 0.5f));
-    auto material_left   = std::make_shared<metal>(glm::vec3(0.8f, 0.8f, 0.8f),0.3f);
+    auto material_left   = std::make_shared<glass>(1.0f / 1.33f);
     auto material_right  = std::make_shared<metal>(glm::vec3(0.8f, 0.6f, 0.2f),1.0f);
 
     hittable_list world;

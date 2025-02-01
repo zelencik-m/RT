@@ -62,6 +62,43 @@ private:
     float fuzz;
 };
 
+class glass : public material
+{
+public:
+    glass(float refraction) : refraction(refraction){}
+
+    bool scatter(ray& in,hit_record& rec, glm::vec3& att, ray& out) const override
+    {
+        att = glm::vec3(1.0f);
+        float ri = rec.front_face ? (1.0f / refraction) : refraction;
+
+        glm::vec3 unit_dir = glm::normalize(in.getDirection());
+        float cos_theta = std::fmin(glm::dot(-unit_dir,rec.normal),1.0f);
+        float sin_theta = std::sqrt(1.0 - cos_theta*cos_theta);
+
+        bool cannon_ref = ri * sin_theta > 1.0f;
+        glm::vec3 dir;
+
+        if(cannon_ref || reflectance(cos_theta,ri) > std::rand())
+            dir = glm::reflect(unit_dir,rec.normal);
+        else 
+            dir = glm::refract(unit_dir,rec.normal,ri);
+
+        out = ray(rec.p,dir);
+        return 1; 
+    }
+
+private:
+    float refraction;
+
+    static float reflectance(float cos,float ref_i)
+    {
+        auto r0 = (1-ref_i)/(1+ref_i);
+        r0 = r0*r0;
+        return r0 + (1-r0)*std::pow((1-cos),5);
+    }
+};
+
 glm::vec3 getRandVec()
 {
     bool should_continue = 1;
