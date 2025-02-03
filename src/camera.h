@@ -102,5 +102,5 @@ private:
     glm::vec3 camera_pos;
     int sampels_per_pixel;
 
-    int max_bouce_count = 10;
+    int max_bouce_count = 5;
 };

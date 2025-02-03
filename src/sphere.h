@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cmath>
+
 #include "hittable.h"
 #include "material.h"
 #include "ray.h"
@@ -35,6 +37,7 @@ public:
         rec.t = root;
         glm::vec3 normal_out = glm::normalize(rec.p - center);
         rec.set_normal(r,normal_out);
+        getUV(normal_out,rec.u,rec.v);
         rec.mat = mat;
         return 1;
     }
@@ -46,5 +49,15 @@ private:
     float radius;
     std::shared_ptr<material> mat;
     aabb bbox;
+
+private:
+    static void getUV(glm::vec3& p,float& u,float& v)
+    {
+        auto theta = std::acos(-p.y);
+        auto phi = std::atan2(-p.z, p.x + M_PI);
+
+        u = phi / (2*M_PI);
+        v = theta / M_PI;
+    }
 
 };

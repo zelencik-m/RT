@@ -1,17 +1,19 @@
 #pragma once
 
 #include "hittable.h"
+#include "texture.h"
 
 #include <glm/glm.hpp>
 #include <glm/gtc/epsilon.hpp>
 #include <random>
+#include <memory>
 
 glm::vec3 getRandVec();
 
 class material
 {
 public:
-    virtual ~material() =default;
+    // virtual ~material() =default;
 
     virtual bool scatter(ray& in,hit_record& rec, glm::vec3& att, ray& out)
     const {return 0;}
@@ -21,7 +23,8 @@ public:
 class lambertian : public material
 {
 public:
-    lambertian(glm::vec3 col) : albedo(col){}
+    lambertian(glm::vec3 col) : tex(std::make_shared<solidColor>(col)){}
+    lambertian(std::shared_ptr<texture> t) : tex(t){}
 
     bool scatter(ray& in,hit_record& rec, glm::vec3& att, ray& out) const override
     {
@@ -35,12 +38,12 @@ public:
             rand_vec = rec.normal;
         
         out = ray(rec.p,rand_vec);
-        att = albedo;
+        att = tex->getColor(rec.u,rec.v,rec.p);
         return 1;
     }
 
 private:
-    glm::vec3 albedo;
+    std::shared_ptr<texture> tex;
 };
 
 class metal : public material

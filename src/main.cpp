@@ -14,6 +14,8 @@
 #include "material.h"
 
 void savePPM(const std::string& filename, int width, int height, const std::shared_ptr<std::vector<glm::i8vec3> > image_data);
+void setManySpheres(hittable_list& world);
+void setChcekeredSpheres(hittable_list& world);
 
 // Function to generate a random float in the range [0,1]
 float random_float() {
@@ -38,11 +40,24 @@ glm::vec3 random_vec3(float min, float max) {
 }
 
 int main() {
-    camera Camera(800.0,400.0,4.0,2.0); 
+    camera Camera(800.0,400.0,4.0,2.0,glm::vec3(0.0f,0.0f,7.0f)); 
 
-    auto material_ground = std::make_shared<lambertian>(glm::vec3(0.5f, 0.5f, 0.5f));
     hittable_list world;
-    world.add(std::make_shared<sphere>(glm::vec3(0.0f, -1000.0f, 0.0f), 1000.0f, material_ground));
+    setChcekeredSpheres(world);
+
+    std::shared_ptr<std::vector<glm::i8vec3> > image_data = Camera.render(world);
+
+    savePPM("output.ppm", Camera.getWidth(), Camera.getHeight(), image_data);
+    
+    std::cout << "Image saved as 'output.ppm'" << std::endl;
+
+    return 0;
+}
+
+void setManySpheres(hittable_list& world)
+{
+    auto checker = std::make_shared<checkerTexture>(glm::vec3(0.1f,0.9f,0.3f),2.0f);
+    world.add(std::make_shared<sphere>(glm::vec3(0.0f, -1000.0f, 0.0f), 1000.0f, std::make_shared<lambertian>(checker)));
 
     for (int a = -11; a < 11; a++) {
         for (int b = -11; b < 11; b++) {
@@ -80,14 +95,14 @@ int main() {
 
     auto material3 = std::make_shared<metal>(glm::vec3(0.7f, 0.6f, 0.5f), 0.0f);
     world.add(std::make_shared<sphere>(glm::vec3(4.0f, 1.0f, 0.0f), 1.0f, material3));
+}
 
-    std::shared_ptr<std::vector<glm::i8vec3> > image_data = Camera.render(world);
+void setChcekeredSpheres(hittable_list& world)
+{
+    auto checker = std::make_shared<checkerTexture>(glm::vec3(.2, .3, .1),2.0f);
 
-    savePPM("output.ppm", Camera.getWidth(), Camera.getHeight(), image_data);
-    
-    std::cout << "Image saved as 'output.ppm'" << std::endl;
-
-    return 0;
+    world.add(std::make_shared<sphere>(glm::vec3(0,-10, 0), 10, std::make_shared<lambertian>(checker)));
+    world.add(std::make_shared<sphere>(glm::vec3(0, 10, 0), 10, std::make_shared<lambertian>(checker)));
 }
 
 void savePPM(const std::string& filename, int width, int height, const std::shared_ptr<std::vector<glm::i8vec3> > image_data) {

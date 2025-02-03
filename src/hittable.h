@@ -14,6 +14,8 @@ public:
     glm::vec3 normal;
     std::shared_ptr<material> mat;
     float t;
+    float u;
+    float v;
     bool front_face;
 
     void set_normal(ray& r, glm::vec3& normal_out)
