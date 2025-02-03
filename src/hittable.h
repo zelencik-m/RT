@@ -1,6 +1,7 @@
 #pragma once
 
 #include "ray.h"
+#include "aabb.h"
 
 #include<memory>
 
@@ -28,4 +29,6 @@ public:
     // virtual ~hittable() = default;
 
     virtual bool hit( ray& r, float r_t_min, float r_t_max, hit_record& rec) const = 0;
+
+    virtual aabb boundingBox() const = 0;
 };

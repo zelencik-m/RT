@@ -17,6 +17,7 @@ public:
     void add(std::shared_ptr<hittable> object)
     {
         objects.push_back(object);
+        bbox = aabb(bbox, object->boundingBox());
     }
 
     bool hit(ray& r, float r_t_min, float r_t_max, hit_record& rec)
@@ -36,4 +37,7 @@ public:
         }
         return was_hit;
     }
+
+private:
+    aabb bbox;
 };

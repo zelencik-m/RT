@@ -14,7 +14,7 @@
 class camera
 {
 public:
-    camera(float w, float h, float VP_wi, float VP_he, glm::vec3 pos = glm::vec3(0.0f,0.0f,1.0f),int samples = 4) : width(w),height(h),VP_width(VP_wi),VP_height(VP_he),camera_pos(pos), sampels_per_pixel(samples)
+    camera(float w, float h, float VP_wi, float VP_he, glm::vec3 pos = glm::vec3(0.0f,1.3f,3.5f),int samples = 4) : width(w),height(h),VP_width(VP_wi),VP_height(VP_he),camera_pos(pos), sampels_per_pixel(samples)
     {   
         auto aspect_ratio = width / height;
 
@@ -37,6 +37,7 @@ public:
         std::shared_ptr<std::vector<glm::i8vec3> > image_data = std::make_shared<std::vector<glm::i8vec3> >(width * height*3);
 
         for (int y = 0; y < height; ++y) {
+            std::cout << "\rProgress: " << (int)((y/height)*100) << "% " << std::flush;
             for (int x = 0; x < width; ++x) {
 
                 auto pixel_center = pixel0 + ((float)y * pixel_delta_v) + ((float)x * pixel_delta_h);
@@ -59,6 +60,7 @@ public:
 
             }
         }
+        std::cout  << "\Done "<< std::endl;
         return image_data;
     }
 

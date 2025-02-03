@@ -8,7 +8,10 @@
 class sphere:public hittable
 {
 public:
-    sphere(glm::vec3 c,float r, std::shared_ptr<material> m) : center(c),radius(std::fmax(0,r)), mat(m){}
+    sphere(glm::vec3 c,float r, std::shared_ptr<material> m) : center(c),radius(std::fmax(0,r)), mat(m)
+    {
+        bbox = aabb(center-glm::vec3(radius), center+glm::vec3(radius));
+    }
     
     bool hit( ray& r, float r_t_min, float r_t_max, hit_record& rec) const override
     {
@@ -36,9 +39,12 @@ public:
         return 1;
     }
 
+    aabb boundingBox() const override {return bbox;}
+
 private:
     glm::vec3 center;
     float radius;
     std::shared_ptr<material> mat;
+    aabb bbox;
 
 };
