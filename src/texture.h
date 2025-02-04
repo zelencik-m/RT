@@ -54,7 +54,7 @@ public:
         // return glm::vec3(u,v,0.0f);
         if (texture.getHeigth() <= 0) return glm::vec3(0,1,1);
         // if(std::abs(u)<1)
-        std::cout << int(u * (texture.getWidth()-1))<< " ";
+        // std::cout << int(u * (texture.getWidth()-1))<< " ";
         u = interval(0,1).clamp(u);
         v = 1.0 - interval(0,1).clamp(v);
 

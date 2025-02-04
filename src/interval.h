@@ -34,4 +34,10 @@ public:
         if(max < x) return max;
         return x;
     }
+
+    interval expand(float delta) const
+    {
+        auto padding = delta/2;
+        return interval(min-padding,max+padding);
+    }
 };

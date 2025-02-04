@@ -14,13 +14,19 @@ public:
 
     aabb(){}
 
-    aabb(const interval& x,const interval&y,const interval&z) :x(x),y(y),z(z) {}
+    aabb(const interval& x,const interval&y,const interval&z) :x(x),y(y),z(z) 
+    {
+        padToMins();
+    }
 
     aabb(glm::vec3 a, glm::vec3 b)
     {
         x = a.x <= b.x ? interval(a.x,b.x) : interval(b.x,a.x);
         y = a.y <= b.y ? interval(a.y,b.y) : interval(b.y,a.y);
         z = a.z <= b.z ? interval(a.z,b.z) : interval(b.z,a.z);
+
+        padToMins();
+
     }
 
     aabb(const aabb& b0,const aabb& b1)
@@ -70,5 +76,14 @@ public:
         else
             return z.size() > y.size() ? 1 : 2;
 
+    }
+
+private:
+    void padToMins()
+    {
+        float delta = 0.00001;
+        if(x.size()< delta)x.expand(delta);
+        if(y.size()< delta)y.expand(delta);
+        if(z.size()< delta)z.expand(delta);
     }
 };
