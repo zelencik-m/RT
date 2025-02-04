@@ -46,7 +46,7 @@ int main() {
     camera Camera(800.0,400.0,4.0,2.0,glm::vec3(0.0f,0.3f,5.0f)); 
 
     hittable_list world;
-    setQuads(world);
+    setEarth(world);
 
     std::shared_ptr<std::vector<glm::i8vec3> > image_data = Camera.render(world);
 
@@ -103,47 +103,25 @@ void setManySpheres(hittable_list& world)
 void setChcekeredSpheres(hittable_list& world)
 {
     auto earth_texture = std::make_shared<imageTexture>("earthmap.jpg");
-    //     std::vector<glm::i8vec3> im;
-
-    // im.reserve(earth_texture->texture.width * earth_texture->texture.height);
-    // for(int i = 0; i< earth_texture->texture.height*3; i++)
-    // {
-    //     for(int j = 0; j< earth_texture->texture.width; j++)
-    //     {
-    //         int idx = i * earth_texture->texture.height + j;
-    //         im.emplace_back((earth_texture->texture.getPixelColor(i,j).x *255.0f),(earth_texture->texture.getPixelColor(i,j).y *255.0f),(earth_texture->texture.getPixelColor(i,j).z *255.0f));
-    //     }
-    // }
-
-    // savePPM("test.ppm",earth_texture->texture.width,earth_texture->texture.height,std::make_shared<std::vector<glm::i8vec3 > >(im));
     auto earth_surface = std::make_shared<lambertian>(earth_texture);
     auto checker = std::make_shared<checkerTexture>(glm::vec3(.2, .3, .1),2.0f);
 
-    world.add(std::make_shared<sphere>(glm::vec3(0,-10, 0), 1, earth_surface));
+    world.add(std::make_shared<sphere>(glm::vec3(0,-10, 0), 10, earth_surface));
     world.add(std::make_shared<sphere>(glm::vec3(0, 10, 0), 10, std::make_shared<lambertian>(checker)));
 }
 
 void setEarth(hittable_list& world)
 {
     auto earth_texture = std::make_shared<imageTexture>("earthmap.jpg");
-
-    std::vector<glm::i8vec3> im;
-
-    for(int i = 0; i< earth_texture->texture.width; i++)
-    {
-        for(int j = 0; j< earth_texture->texture.height; j++)
-            im.emplace_back((int8_t)(earth_texture->texture.image[i*j].x *255.0f),(int8_t)(earth_texture->texture.image[i*j].y *255.0f),(int8_t)(earth_texture->texture.image[i*j].z *255.0f));
-    }
-
-    savePPM("test.ppm",earth_texture->texture.width,earth_texture->texture.height,std::make_shared<std::vector<glm::i8vec3 > >(im));
     auto earth_surface = std::make_shared<lambertian>(earth_texture);
-    auto globe = std::make_shared<sphere>(glm::vec3(0.0f), 2.0f, earth_surface);
+    world.add(std::make_shared<sphere>(glm::vec3(0,0, 0), 2, earth_surface));
 
 }
 
 void setQuads(hittable_list& world)
 {
-
+    auto earth_texture = std::make_shared<imageTexture>("earthmap.jpg");
+    auto earth_surface = std::make_shared<lambertian>(earth_texture);
     // Materials
     auto left_red     = std::make_shared<lambertian>(glm::vec3(1.0, 0.2, 0.2));
     auto back_green   = std::make_shared<lambertian>(glm::vec3(0.2, 1.0, 0.2));
@@ -152,11 +130,11 @@ void setQuads(hittable_list& world)
     auto lower_teal   = std::make_shared<lambertian>(glm::vec3(0.2, 0.8, 0.8));
 
     // Quads
-    world.add(std::make_shared<quad>(glm::vec3(-3,-2, 5), glm::vec3(0, 0,-4), glm::vec3(0, 4, 0), left_red));
     world.add(std::make_shared<quad>(glm::vec3(-2,-2, 0), glm::vec3(4, 0, 0), glm::vec3(0, 4, 0), earth_surface));
-    world.add(std::make_shared<quad>(glm::vec3( 3,-2, 1), glm::vec3(0, 0, 4), glm::vec3(0, 4, 0), right_blue));
-    world.add(std::make_shared<quad>(glm::vec3(-2, 3, 1), glm::vec3(4, 0, 0), glm::vec3(0, 0, 4), upper_orange));
-    world.add(std::make_shared<quad>(glm::vec3(-2,-3, 5), glm::vec3(4, 0, 0), glm::vec3(0, 0,-4), lower_teal));
+    // world.add(std::make_shared<quad>(glm::vec3(-3,-2, 5), glm::vec3(0, 0,-4), glm::vec3(0, 4, 0), left_red));
+    // world.add(std::make_shared<quad>(glm::vec3( 3,-2, 1), glm::vec3(0, 0, 4), glm::vec3(0, 4, 0), right_blue));
+    // world.add(std::make_shared<quad>(glm::vec3(-2, 3, 1), glm::vec3(4, 0, 0), glm::vec3(0, 0, 4), upper_orange));
+    // world.add(std::make_shared<quad>(glm::vec3(-2,-3, 5), glm::vec3(4, 0, 0), glm::vec3(0, 0,-4), lower_teal));
 }
 
 void savePPM(const std::string& filename, int width, int height, const std::shared_ptr<std::vector<glm::i8vec3> > image_data) {

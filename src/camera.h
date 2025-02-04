@@ -37,7 +37,7 @@ public:
         std::shared_ptr<std::vector<glm::i8vec3> > image_data = std::make_shared<std::vector<glm::i8vec3> >(width * height*3);
 
         for (int y = 0; y < height; ++y) {
-            std::cout << "\rProgress: " << (int)((y/height)*100) << "% " << std::flush;
+            // std::cout << "\rProgress: " << (int)((y/height)*100) << "% " << std::flush;
             for (int x = 0; x < width; ++x) {
 
                 auto pixel_center = pixel0 + ((float)y * pixel_delta_v) + ((float)x * pixel_delta_h);

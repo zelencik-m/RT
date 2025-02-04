@@ -28,7 +28,7 @@ public:
         return min < x && x < max;
     }
 
-    bool clamp(float x) const
+    float clamp(float x) const
     {
         if(x < min) return min;
         if(max < x) return max;
