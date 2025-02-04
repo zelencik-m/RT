@@ -16,6 +16,7 @@
 void savePPM(const std::string& filename, int width, int height, const std::shared_ptr<std::vector<glm::i8vec3> > image_data);
 void setManySpheres(hittable_list& world);
 void setChcekeredSpheres(hittable_list& world);
+void setEarth(hittable_list& world);
 
 // Function to generate a random float in the range [0,1]
 float random_float() {
@@ -40,10 +41,10 @@ glm::vec3 random_vec3(float min, float max) {
 }
 
 int main() {
-    camera Camera(800.0,400.0,4.0,2.0,glm::vec3(0.0f,0.0f,7.0f)); 
+    camera Camera(800.0,400.0,4.0,2.0,glm::vec3(0.0f,1.3f,5.0f)); 
 
     hittable_list world;
-    setChcekeredSpheres(world);
+    setManySpheres(world);
 
     std::shared_ptr<std::vector<glm::i8vec3> > image_data = Camera.render(world);
 
@@ -99,10 +100,43 @@ void setManySpheres(hittable_list& world)
 
 void setChcekeredSpheres(hittable_list& world)
 {
+    auto earth_texture = std::make_shared<imageTexture>("earthmap.jpg");
+    //     std::vector<glm::i8vec3> im;
+
+    // im.reserve(earth_texture->texture.width * earth_texture->texture.height);
+    // for(int i = 0; i< earth_texture->texture.height*3; i++)
+    // {
+    //     for(int j = 0; j< earth_texture->texture.width; j++)
+    //     {
+    //         int idx = i * earth_texture->texture.height + j;
+    //         im.emplace_back((earth_texture->texture.getPixelColor(i,j).x *255.0f),(earth_texture->texture.getPixelColor(i,j).y *255.0f),(earth_texture->texture.getPixelColor(i,j).z *255.0f));
+    //     }
+    // }
+
+    // savePPM("test.ppm",earth_texture->texture.width,earth_texture->texture.height,std::make_shared<std::vector<glm::i8vec3 > >(im));
+    auto earth_surface = std::make_shared<lambertian>(earth_texture);
     auto checker = std::make_shared<checkerTexture>(glm::vec3(.2, .3, .1),2.0f);
 
-    world.add(std::make_shared<sphere>(glm::vec3(0,-10, 0), 10, std::make_shared<lambertian>(checker)));
+    world.add(std::make_shared<sphere>(glm::vec3(0,-10, 0), 1, earth_surface));
     world.add(std::make_shared<sphere>(glm::vec3(0, 10, 0), 10, std::make_shared<lambertian>(checker)));
+}
+
+void setEarth(hittable_list& world)
+{
+    auto earth_texture = std::make_shared<imageTexture>("earthmap.jpg");
+
+    std::vector<glm::i8vec3> im;
+
+    for(int i = 0; i< earth_texture->texture.width; i++)
+    {
+        for(int j = 0; j< earth_texture->texture.height; j++)
+            im.emplace_back((int8_t)(earth_texture->texture.image[i*j].x *255.0f),(int8_t)(earth_texture->texture.image[i*j].y *255.0f),(int8_t)(earth_texture->texture.image[i*j].z *255.0f));
+    }
+
+    savePPM("test.ppm",earth_texture->texture.width,earth_texture->texture.height,std::make_shared<std::vector<glm::i8vec3 > >(im));
+    auto earth_surface = std::make_shared<lambertian>(earth_texture);
+    auto globe = std::make_shared<sphere>(glm::vec3(0.0f), 2.0f, earth_surface);
+
 }
 
 void savePPM(const std::string& filename, int width, int height, const std::shared_ptr<std::vector<glm::i8vec3> > image_data) {

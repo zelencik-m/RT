@@ -53,8 +53,8 @@ private:
 private:
     static void getUV(glm::vec3& p,float& u,float& v)
     {
-        auto theta = std::acos(-p.y);
-        auto phi = std::atan2(-p.z, p.x + M_PI);
+        float theta = std::acos(-p.y);
+        float phi = std::atan2(-p.z, p.x) + M_PI;
 
         u = phi / (2*M_PI);
         v = theta / M_PI;
