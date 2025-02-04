@@ -15,8 +15,11 @@ class material
 public:
     // virtual ~material() =default;
 
-    virtual bool scatter(ray& in,hit_record& rec, glm::vec3& att, ray& out)
-    const {return 0;}
+    virtual bool scatter(ray& in,hit_record& rec, glm::vec3& att, ray& out) const {return 0;}
+    virtual glm::vec3 emitt(float u,float v, glm::vec3 pos)const
+    {
+        return glm::vec3(0.0f);
+    }
 
 };
 
@@ -100,6 +103,21 @@ private:
         r0 = r0*r0;
         return r0 + (1-r0)*std::pow((1-cos),5);
     }
+};
+
+class diffuseLight : public material
+{
+public:
+    diffuseLight(std::shared_ptr<texture> t) :tex(t){}
+    diffuseLight(glm::vec3 col) : tex(std::make_shared<solidColor>(col)){}
+
+    glm::vec3 emitt(float u,float v, glm::vec3 pos)const override
+    {
+        return tex->getColor(u,v,pos);
+    }
+
+private:
+    std::shared_ptr<texture> tex;
 };
 
 glm::vec3 getRandVec()

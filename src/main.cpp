@@ -19,6 +19,8 @@ void setManySpheres(hittable_list& world);
 void setChcekeredSpheres(hittable_list& world);
 void setEarth(hittable_list& world);
 void setQuads(hittable_list& world);
+void setSimpleLight(hittable_list& world);
+void setCornellBox(hittable_list& world);
 
 // Function to generate a random float in the range [0,1]
 float random_float() {
@@ -43,10 +45,11 @@ glm::vec3 random_vec3(float min, float max) {
 }
 
 int main() {
-    camera Camera(800.0,400.0,4.0,2.0,glm::vec3(0.0f,0.3f,5.0f)); 
+    camera Camera(750.0,325.0,4.0,2.0,glm::vec3(0.0f,1.3f,5.0f)); 
+    Camera.setBG(glm::vec3(0.0f));
 
     hittable_list world;
-    setEarth(world);
+    setSimpleLight(world);
 
     std::shared_ptr<std::vector<glm::i8vec3> > image_data = Camera.render(world);
 
@@ -120,21 +123,48 @@ void setEarth(hittable_list& world)
 
 void setQuads(hittable_list& world)
 {
-    auto earth_texture = std::make_shared<imageTexture>("earthmap.jpg");
-    auto earth_surface = std::make_shared<lambertian>(earth_texture);
     // Materials
     auto left_red     = std::make_shared<lambertian>(glm::vec3(1.0, 0.2, 0.2));
-    auto back_green   = std::make_shared<lambertian>(glm::vec3(0.2, 1.0, 0.2));
+    auto back_white   = std::make_shared<lambertian>(glm::vec3(0.9, 1.0, 0.85));
     auto right_blue   = std::make_shared<lambertian>(glm::vec3(0.2, 0.2, 1.0));
     auto upper_orange = std::make_shared<lambertian>(glm::vec3(1.0, 0.5, 0.0));
     auto lower_teal   = std::make_shared<lambertian>(glm::vec3(0.2, 0.8, 0.8));
 
     // Quads
-    world.add(std::make_shared<quad>(glm::vec3(-2,-2, 0), glm::vec3(4, 0, 0), glm::vec3(0, 4, 0), earth_surface));
-    // world.add(std::make_shared<quad>(glm::vec3(-3,-2, 5), glm::vec3(0, 0,-4), glm::vec3(0, 4, 0), left_red));
-    // world.add(std::make_shared<quad>(glm::vec3( 3,-2, 1), glm::vec3(0, 0, 4), glm::vec3(0, 4, 0), right_blue));
-    // world.add(std::make_shared<quad>(glm::vec3(-2, 3, 1), glm::vec3(4, 0, 0), glm::vec3(0, 0, 4), upper_orange));
-    // world.add(std::make_shared<quad>(glm::vec3(-2,-3, 5), glm::vec3(4, 0, 0), glm::vec3(0, 0,-4), lower_teal));
+    world.add(std::make_shared<quad>(glm::vec3(-2,-2, 0), glm::vec3(4, 0, 0), glm::vec3(0, 4, 0), back_white));
+    world.add(std::make_shared<quad>(glm::vec3(-3,-2, 5), glm::vec3(0, 0,-4), glm::vec3(0, 4, 0), left_red));
+    world.add(std::make_shared<quad>(glm::vec3( 3,-2, 1), glm::vec3(0, 0, 4), glm::vec3(0, 4, 0), right_blue));
+    world.add(std::make_shared<quad>(glm::vec3(-2, 3, 1), glm::vec3(4, 0, 0), glm::vec3(0, 0, 4), upper_orange));
+    world.add(std::make_shared<quad>(glm::vec3(-2,-3, 5), glm::vec3(4, 0, 0), glm::vec3(0, 0,-4), lower_teal));
+}
+
+void setSimpleLight(hittable_list& world)
+{
+    auto checker = std::make_shared<checkerTexture>(glm::vec3(.2, .3, .1),2.0f);
+    auto difflight = std::make_shared<diffuseLight>(glm::vec3(1));
+    auto left_red     = std::make_shared<lambertian>(glm::vec3(1.0, 0.2, 0.2));
+
+    world.add(std::make_shared<sphere>(glm::vec3(0,-1000,0), 1000, std::make_shared<lambertian>(checker)));
+    world.add(std::make_shared<sphere>(glm::vec3(0,2,0), 2, std::make_shared<lambertian>(checker)));
+    world.add(std::make_shared<sphere>(glm::vec3(4,3,2), 2, difflight));
+    world.add(std::make_shared<quad>(glm::vec3(-3,3,2), glm::vec3(2,0,0), glm::vec3(2,2,0), difflight));
+
+}
+
+void setCornellBox(hittable_list& world)
+{
+    auto red   = std::make_shared<lambertian>(glm::vec3(0.65f, 0.05f, 0.05f));
+    auto white = std::make_shared<lambertian>(glm::vec3(0.73f, 0.73f, 0.73f));
+    auto green = std::make_shared<lambertian>(glm::vec3(0.12f, 0.45f, 0.15f));
+    auto light = std::make_shared<diffuseLight>(glm::vec3(15.0f, 15.0f, 15.0f));
+
+    world.add(std::make_shared<quad>(glm::vec3(555.0f,0.0f,0.0f), glm::vec3(0.0f,555.0f,0.0f), glm::vec3(0.0f,0.0f,555.0f), green));
+    world.add(std::make_shared<quad>(glm::vec3(0.0f,0.0f,0.0f), glm::vec3(0.0f,555.0f,0.0f), glm::vec3(0.0f,0.0f,555.0f), red));
+    world.add(std::make_shared<quad>(glm::vec3(343.0f, 554.0f, 332.0f), glm::vec3(-130.0f,0.0f,0.0f), glm::vec3(0.0f,0.0f,-105.0f), light));
+    world.add(std::make_shared<quad>(glm::vec3(0.0f,0.0f,0.0f), glm::vec3(555.0f,0.0f,0.0f), glm::vec3(0.0f,0.0f,555.0f), white));
+    world.add(std::make_shared<quad>(glm::vec3(555.0f,555.0f,555.0f), glm::vec3(-555.0f,0.0f,0.0f), glm::vec3(0.0f,0.0f,-555.0f), white));
+    world.add(std::make_shared<quad>(glm::vec3(0.0f,0.0f,555.0f), glm::vec3(555.0f,0.0f,0.0f), glm::vec3(0.0f,555.0f,0.0f), white));
+  
 }
 
 void savePPM(const std::string& filename, int width, int height, const std::shared_ptr<std::vector<glm::i8vec3> > image_data) {

@@ -14,7 +14,7 @@
 class camera
 {
 public:
-    camera(float w, float h, float VP_wi, float VP_he, glm::vec3 pos = glm::vec3(0.0f,1.3f,3.5f),int samples = 4) : width(w),height(h),VP_width(VP_wi),VP_height(VP_he),camera_pos(pos), sampels_per_pixel(samples)
+    camera(float w, float h, float VP_wi, float VP_he, glm::vec3 pos = glm::vec3(0.0f,1.3f,3.5f),int samples = 8) : width(w),height(h),VP_width(VP_wi),VP_height(VP_he),camera_pos(pos), sampels_per_pixel(samples)
     {   
         auto aspect_ratio = width / height;
 
@@ -32,12 +32,14 @@ public:
         pixel0 = VP_upper_left + 0.5f * (pixel_delta_h + pixel_delta_v);
     }
 
+    void setBG(glm::vec3 col) { background_color = col;}
+
     std::shared_ptr<std::vector<glm::i8vec3> > render(hittable_list& world)
     {
         std::shared_ptr<std::vector<glm::i8vec3> > image_data = std::make_shared<std::vector<glm::i8vec3> >(width * height*3);
 
         for (int y = 0; y < height; ++y) {
-            // std::cout << "\rProgress: " << (int)((y/height)*100) << "% " << std::flush;
+            std::cout << "\rProgress: " << (int)((y/height)*100) << "% " << std::flush;
             for (int x = 0; x < width; ++x) {
 
                 auto pixel_center = pixel0 + ((float)y * pixel_delta_v) + ((float)x * pixel_delta_h);
@@ -74,20 +76,33 @@ private:
             return glm::vec3(0.0f);
 
         hit_record rec;
-        if(world.hit(r,0.005f,std::numeric_limits<float>::infinity(),rec))
-        {
-            ray reflected(glm::vec3(0.0f),glm::vec3(0.0f));
-            glm::vec3 att;
-            if(rec.mat->scatter(r,rec,att,reflected))
-            {
-                return att * getColor(reflected,world,bouce_count+1);
+        if(!world.hit(r,0.005f,std::numeric_limits<float>::infinity(),rec))
+            return background_color;
 
-            }
-            return glm::vec3(0.0f);
+        ray reflected(glm::vec3(0.0f),glm::vec3(0.0f));
+        glm::vec3 col;
+        glm::vec3 emission_col = rec.mat->emitt(rec.u,rec.v,rec.p);
 
-        }
-        float a = 0.5f * ((glm::normalize(r.getDirection()).y) + 1.0);
-        return (1.0f-a) * glm::vec3(1.0f) + a * glm::vec3(0.5f,0.7f,1.0f);
+        if(!rec.mat->scatter(r,rec,col,reflected))
+            return emission_col;
+
+        glm::vec3 scatter_col = col * getColor(reflected,world,bouce_count+1);
+
+        return emission_col + scatter_col;
+
+        // {
+        //     ray reflected(glm::vec3(0.0f),glm::vec3(0.0f));
+        //     glm::vec3 att;
+        //     if(rec.mat->scatter(r,rec,att,reflected))
+        //     {
+        //         return att * getColor(reflected,world,bouce_count+1);
+
+        //     }
+        //     return glm::vec3(0.0f);
+
+        // }
+        // float a = 0.5f * ((glm::normalize(r.getDirection()).y) + 1.0);
+        // return (1.0f-a) * glm::vec3(1.0f) + a * glm::vec3(0.5f,0.7f,1.0f);
     }
 
 private:
@@ -102,5 +117,7 @@ private:
     glm::vec3 camera_pos;
     int sampels_per_pixel;
 
-    int max_bouce_count = 5;
+    int max_bouce_count = 10;
+
+    glm::vec3 background_color;
 };
